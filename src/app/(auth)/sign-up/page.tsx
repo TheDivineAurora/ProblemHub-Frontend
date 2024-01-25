@@ -1,24 +1,21 @@
 "use client"
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { useToast } from '@/components/ui/use-toast'
-import * as z from "zod";
-import { SignUpValidation } from '@/utils/validation.js'
+import GoogleAuthButton from '@/components/GoogleAuthButton';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { FcGoogle } from 'react-icons/fc'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
+import { SignUpValidation } from '@/utils/validation.js';
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from 'lucide-react';
-import { useRegisterUser } from '@/utils/api.js';
-import { useAuth } from '@/context/AuthContext';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as z from "zod";
 const page = () => {
+  const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const signUpUserMutation = useRegisterUser();
-  const { login, logout } = useAuth();
   const form = useForm<z.infer<typeof SignUpValidation>>({
     resolver: zodResolver(SignUpValidation),
     defaultValues: {
@@ -31,24 +28,38 @@ const page = () => {
 
 
   const handleSignUp = async (user: z.infer<typeof SignUpValidation>) => {
+    setIsLoading(true);
+    const { username, name, email, password } = user;
+
     try {
-      setIsLoading(true);
-      const { data } = await signUpUserMutation.mutateAsync(user);
-      localStorage.setItem('token', data.token);
-      console.log("User sign up succesfully", data);
-      toast({ title: "User Account Created Succesfully." });
-      login();
-      form.reset();
-    } catch (error) {
-      console.log(error);
-      toast({ title: "Failed to create a new account. Please try again." });
+      const res = await fetch("/api/auth/sign-up", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          username,
+          email,
+          password,
+        }),
+      });
+      toast({
+        title: "Account Created Succesfully",
+      })
+      res.status === 201 &&
+        router.push("/dashboard");
+    } catch (err: any) {
+      console.log(err);
+      toast({
+        title: "Failed to create Account",
+        description: "Please try again!"
+      })
     } finally {
       setIsLoading(false);
     }
   }
-  const loginWithGoogle = () => {
 
-  };
   return (
     <>
 
@@ -123,7 +134,7 @@ const page = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isLoading || isGoogleLoading}>
+            <Button type="submit" disabled={isLoading }>
               {isLoading ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> : null}
               Submit
             </Button>
@@ -138,14 +149,7 @@ const page = () => {
               </span>
             </div>
           </div>
-          <Button onClick={loginWithGoogle} className='w-full' variant="outline" disabled={isLoading || isGoogleLoading}>
-
-            {isGoogleLoading ? <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-              :
-              <FcGoogle className='h-4 w-4 mr-2'/>}
-
-            Continue with  Google
-          </Button>
+          <GoogleAuthButton/>
           <p className="px-8 text-center text-sm text-muted-foreground">
             <Link
               href="/sign-in"

@@ -10,13 +10,16 @@ import {
 import Link from "next/link"
 import { buttonVariants } from "./ui/button"
 import { Menu } from "lucide-react"
+import { useSession } from "next-auth/react"
 
 
 const MobileNav = () => {
+    const { data: session } = useSession();
+    const user = session?.user;
     return (
         <Sheet>
             <SheetTrigger>
-            <Menu className=" lg:hidden mx-2"/>
+                <Menu className=" lg:hidden mx-2" />
             </SheetTrigger>
             <SheetContent className="w-full h-full sm:w-[540px] flex flex-col justify-between">
                 <section className="flex flex-col items-start text-center">
@@ -44,21 +47,23 @@ const MobileNav = () => {
                 </section>
 
                 <section className="flex flex-row mx-auto items-center gap-5">
-                    <Link
+                    {user ? <> <Link
                         href="/sign-up"
                         className={buttonVariants({
-                            variant: 'default',size: 'sm'
-                         
+                            variant: 'default', size: 'sm'
+
                         })}>
                         Create Account
                     </Link>
-                    <Link
-                        href="/sign-in"            
-                        className={buttonVariants({
-                            variant: 'ghost',
-                        })}>
-                        Log In
-                    </Link>
+                        <Link
+                            href="/sign-in"
+                            className={buttonVariants({
+                                variant: 'ghost',
+                            })}>
+                            Log In
+                        </Link> </> :
+                         null}
+
                 </section>
 
 

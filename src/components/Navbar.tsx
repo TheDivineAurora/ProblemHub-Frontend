@@ -1,13 +1,16 @@
+"use client"
 import Link from "next/link"
 import MaxWidthWrapper from "./MaxWidthWrapper"
 import Image from "next/image"
 import { buttonVariants } from "./ui/button"
 import UserProfile from "./UserProfile"
 import MobileNav from "./MobileNav"
+import { useSession } from "next-auth/react"
 
 
 const Navbar = () => {
-    const user = false;
+    const {data:session} = useSession();
+    const user = session?.user;
     return (
         <div className="bg-white sticky z-50 top-0 inset-x-0 h-16">
             <header className="relative bg-white">
@@ -55,7 +58,8 @@ const Navbar = () => {
 
                             <div className="ml-auto flex items-center" >
                                 <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:space-x-6">
-                                    {user ? null : (
+                                    {user ?  <UserProfile />  : (
+                                        <>
                                         <Link
                                             href="/sign-in"
                                             className={buttonVariants({
@@ -63,32 +67,25 @@ const Navbar = () => {
                                             })}>
                                             Sign In
                                         </Link>
-                                    )}
-
-                                    {user ? null : (
                                         <span
                                             className='h-6 w-px bg-gray-200'
                                             aria-hidden='true'
                                         />
-                                    )}
-
-                                    {user ? <UserProfile /> : (
-                                        <Link
+                                         <Link
                                             href="/sign-up"
                                             className={buttonVariants({
                                                 variant: 'ghost',
                                             })}>
                                             Create Account
                                         </Link>
-                                    )}
-
-                                    {user ? null : (
                                         <span
                                             className='h-6 w-px bg-gray-200'
                                             aria-hidden='true'
                                         />
+                                        </>                                       
                                     )}
                                 </div>
+                               
                             </div>
                         </div>
                     </div>
