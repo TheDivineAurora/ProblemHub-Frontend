@@ -6,11 +6,11 @@ import { buttonVariants } from "./ui/button"
 import UserProfile from "./UserProfile"
 import MobileNav from "./MobileNav"
 import { useSession } from "next-auth/react"
+import { useAuth } from "@/contexts/AuthContext"
 
 
 const Navbar = () => {
-    // const {data:session} = useSession();
-    const user = false;
+    const { isAuthenicated , user} = useAuth();
     return (
         <div className="bg-white sticky z-50 top-0 inset-x-0 h-16">
             <header className="relative bg-white">
@@ -33,7 +33,7 @@ const Navbar = () => {
 
                             <div className="ml-auto flex items-center" >
                                 <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:space-x-6">
-                                    {user ?  <UserProfile />  : (
+                                    {isAuthenicated ?  <UserProfile />  : (
                                         <>
                                         <Link
                                             href="/sign-in"
