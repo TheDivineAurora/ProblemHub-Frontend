@@ -4,21 +4,23 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { SignInValidation } from '@/utils/validation.js';
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from 'axios';
 import { Loader2 } from 'lucide-react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+
 import * as z from "zod";
 const page = () => {
-  const searchParams = useSearchParams()!;
   const { toast } = useToast();
-  const session = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const { isAuthenicated, login, logout } = useAuth();
   const form = useForm<z.infer<typeof SignInValidation>>({
     resolver: zodResolver(SignInValidation),
     defaultValues: {
@@ -27,18 +29,39 @@ const page = () => {
     },
   })
 
-  if (session.status === "authenticated") {
-    router?.push("/dashboard");
-  }
-
   const handleSignIn = async (user: z.infer<typeof SignInValidation>) => {
     setIsLoading(true);
-    const { email, password } = user;
-    signIn("credentials", {
-      email,
-      password
-    })
-    setIsLoading(false);
+
+    const postData = {
+      email : user.email,
+      password: user.password
+    }
+    try {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, postData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      toast({
+        title: "Logged In Succesfully",
+      })
+      //Storing the token in localstorage
+      localStorage.setItem('token', res.data.data.token); 
+      
+      //navigating to dashboard
+      router.push("/dashboard");
+      login();
+      
+    } catch (err: any) {
+      console.log(err);
+      toast({
+        title: "Failed to Log In",
+        description: "Please try again!"
+      })
+    } finally {
+      setIsLoading(false);
+    }
   }
   return (
     <>

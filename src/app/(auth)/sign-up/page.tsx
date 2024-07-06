@@ -1,9 +1,11 @@
 "use client"
 import GoogleAuthButton from '@/components/GoogleAuthButton';
+import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { SignUpValidation } from '@/utils/validation.js';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from 'lucide-react';
@@ -12,43 +14,52 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from "zod";
+
+type SignUpResponse = {
+  email: String,
+  username : String,
+  token: string;
+};
+
 const page = () => {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenicated, login, logout } = useAuth();
   const form = useForm<z.infer<typeof SignUpValidation>>({
     resolver: zodResolver(SignUpValidation),
     defaultValues: {
-      name: "",
       email: "",
       username: "",
       password: "",
     },
   })
 
-
   const handleSignUp = async (user: z.infer<typeof SignUpValidation>) => {
     setIsLoading(true);
-    const { username, name, email, password } = user;
 
+    const postData = {
+      email : user.email,
+      username : user.username,
+      password: user.password
+    }
     try {
-      const res = await fetch("/api/auth/sign-up", {
-        method: "POST",
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`, postData, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name,
-          username,
-          email,
-          password,
-        }),
       });
+
       toast({
         title: "Account Created Succesfully",
       })
-      res.status === 201 &&
-        router.push("/dashboard");
+      //Storing the token in localstorage
+      localStorage.setItem('token', res.data.data.token); 
+
+      //navigating to dashboard
+      router.push("/dashboard");
+      login();
+      
     } catch (err: any) {
       console.log(err);
       toast({
@@ -62,7 +73,6 @@ const page = () => {
 
   return (
     <>
-
       <Form {...form}>
         <div className='sm:w-[420px] flex flex-col space-y-6 items-center'>
           <div className="flex flex-col space-y-2 text-center">
@@ -77,20 +87,6 @@ const page = () => {
           <form
             onSubmit={form.handleSubmit(handleSignUp)}
             className="flex flex-col w-full gap-2 mt-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input type="text" placeholder="name" className="shad-input" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="email"
@@ -149,7 +145,7 @@ const page = () => {
               </span>
             </div>
           </div>
-          <GoogleAuthButton/>
+          {/* <GoogleAuthButton/> */}
           <p className="px-8 text-center text-sm text-muted-foreground">
             <Link
               href="/sign-in"

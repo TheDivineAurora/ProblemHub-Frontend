@@ -23,7 +23,7 @@ const Navbar = () => {
                                     <Image src="/Vector.svg"
                                         width={45}
                                         height={45}
-                                        alt="Handl" />
+                                        alt="problemhub" />
                                 </Link>
                             </div>
 
