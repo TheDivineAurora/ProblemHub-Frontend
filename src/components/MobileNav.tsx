@@ -14,8 +14,7 @@ import { useSession } from "next-auth/react"
 
 
 const MobileNav = () => {
-    const { data: session } = useSession();
-    const user = session?.user;
+    const user = false;
     return (
         <Sheet>
             <SheetTrigger>

@@ -1,11 +1,8 @@
 import type { Metadata } from 'next'
 import "../globals.css"
 import { Inter as FontSans } from "next/font/google"
- 
-
 import Navbar from '@/components/Navbar'
 import { cn } from '@/lib/utils'
-import { NextAuthProvider } from '../Provider'
  
 export const fontSans = FontSans({
   subsets: ["latin"],
@@ -26,9 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={cn("relative h-full antialiased font-sans", fontSans.variable)}>
         <main className='relative flex flex-col min-h-screen'>
-          <NextAuthProvider>
           <Navbar />
-          </NextAuthProvider>
           <div className='flex-grow flex-1'>
             {children}
           </div>

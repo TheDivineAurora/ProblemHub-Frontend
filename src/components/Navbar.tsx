@@ -9,17 +9,16 @@ import { useSession } from "next-auth/react"
 
 
 const Navbar = () => {
-    const {data:session} = useSession();
-    const user = session?.user;
+    // const {data:session} = useSession();
+    const user = false;
     return (
         <div className="bg-white sticky z-50 top-0 inset-x-0 h-16">
             <header className="relative bg-white">
                 <MaxWidthWrapper>
                     <div className="border-b border-gray-200">
                         <div className="flex  h-16 items-center">
-
                             <MobileNav />
-                            <div className="ml-4 flex lg:ml-0">
+                            <div className="ml-4 flex xl:ml-0">
                                 <Link href="/">
                                     <Image src="/Vector.svg"
                                         width={45}
@@ -28,32 +27,8 @@ const Navbar = () => {
                                 </Link>
                             </div>
 
-                            <div className="hidden z-50 lg:ml-10 lg:block lg:self-stretch">
-                                <div className="flex gap-4 h-full">
-                                    <div className="relative gap-x-6 flex items-center">
-                                        <Link
-                                            href="/"
-                                            className={buttonVariants({
-                                                variant: 'ghost',
-                                            })}>
-                                            Home
-                                        </Link>
-                                        <Link
-                                            href="/dashboard"
-                                            className={buttonVariants({
-                                                variant: 'ghost',
-                                            })}>
-                                            Dashboard
-                                        </Link>
-                                        <Link
-                                            href="/videos"
-                                            className={buttonVariants({
-                                                variant: 'ghost',
-                                            })}>
-                                            Videos
-                                        </Link>
-                                    </div>
-                                </div>
+                            <div className="hidden z-50 lg:ml-10 lg:block lg:self-stretch m-auto">
+                                <input className = "px-4 py-2 border-2 border-gray-300 min-w-64" type = "text" placeholder = "search user" />
                             </div>
 
                             <div className="ml-auto flex items-center" >

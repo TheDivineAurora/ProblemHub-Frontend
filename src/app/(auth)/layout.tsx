@@ -1,5 +1,4 @@
 import { Toaster } from '@/components/ui/toaster';
-import { NextAuthProvider } from '../Provider';
 import '../globals.css';
 import { cn } from '@/lib/utils';
 
@@ -23,9 +22,7 @@ export default function RootLayout({
       <body className={cn("relative h-full antialiased font-sans", fontSans.variable)}>
       <main className='relative flex min-h-screen'>
           <section className="flex flex-1 justify-center items-center flex-col py-10">
-            <NextAuthProvider>
               {children}
-            </NextAuthProvider>
           </section>
           <img
             src="/illustration.png"
