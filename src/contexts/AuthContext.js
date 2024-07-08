@@ -33,13 +33,17 @@ export const AuthProvider = ({ children }) => {
         fetchUserData();
     }
 
-    const logout =async () => {
+    const logout = async () => {
         setIsLoading(true);
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/logout`, {
-            withCredentials : true
-        })
-        setIsAuthenicated(false);
-        setUser(null);
+        try{
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/logout`, {
+                withCredentials : true
+            })
+            setIsAuthenicated(false);
+            setUser(null);
+        } catch(error){
+            console.log(error);
+        } 
     }
 
     return (
