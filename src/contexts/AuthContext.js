@@ -5,16 +5,17 @@ import { createContext, useContext, useEffect, useState } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [isLoading, setIsLoading] = useState(true);
     const [isAuthenicated, setIsAuthenicated] = useState(false);
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        fetchUserData();
+        const storedToken = localStorage.getItem('token');
+        if(storedToken){
+            fetchUserData();
+        }
     }, []);
 
     const fetchUserData = async () => {
-        setIsLoading(true);
         try{
             const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/profile`, {
                 withCredentials : true
@@ -22,25 +23,27 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenicated(true);
             setUser(res.data.data);
         } catch(error){
+            console.log("Eroor fetching user :", error);
             setIsAuthenicated(false);
             setUser(null);
-        } finally {
-            setIsLoading(false);
         }
     }
 
     const login = () => {
-        fetchUserData();
+        const storedToken = localStorage.getItem('token');
+        if(storedToken){
+            fetchUserData();
+        }
     }
 
     const logout = () => {
-        setIsLoading(true);
+        localStorage.removeItem('token');
         setIsAuthenicated(false);
         setUser(null);
     }
 
     return (
-        <AuthContext.Provider value = {{isAuthenicated, user, isLoading, login, logout, fetchUserData}}>
+        <AuthContext.Provider value = {{isAuthenicated, user, login, logout, fetchUserData}}>
             {children}
         </AuthContext.Provider>
     )
