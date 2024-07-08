@@ -54,8 +54,6 @@ const page = () => {
       toast({
         title: "Account Created Succesfully",
       })
-      //Storing the token in localstorage
-      localStorage.setItem('token', res.data.data.token); 
 
       //navigating to dashboard
       router.push("/dashboard");

@@ -47,8 +47,6 @@ const page = () => {
       toast({
         title: "Logged In Succesfully",
       })
-      //Storing the token in localstorage
-      localStorage.setItem('token', res.data.data.token); 
       
       //navigating to dashboard
       router.push("/dashboard");
